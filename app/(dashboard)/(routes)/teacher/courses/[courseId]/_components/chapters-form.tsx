@@ -59,8 +59,7 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     }
    }
 
-   const onReorder = async(updateData:{id:string; position:number}
-    [] ) =>{
+   const onReorder = async (updateData: { id: string; position: number }[]) => {
         try{
 setIsUpdating(true);
  await axios.put(`/api/courses/${courseId}/chapters/reorder`,{
@@ -134,7 +133,7 @@ setIsUpdating(false);
        <div className={cn("text-sm mt-2", !initialData.chapters.length && "text-slate-500 italic")}>
     {initialData.chapters.length && "No chapters" }
     <ChapterList
-    onEdit  {()=>{}}
+    onEdit = {onEdit}
     onReorder = {onReorder}
     items ={initialData.chapters || []}
     />

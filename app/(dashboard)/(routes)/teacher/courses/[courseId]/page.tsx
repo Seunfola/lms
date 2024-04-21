@@ -9,6 +9,8 @@ import { CategoryForm } from "./_components/category-form";
 import { PriceForm } from "./_components/price-form";
 import { AttachmentForm } from "./_components/attachment-form";
 import { ChaptersForm } from "./_components/chapters-form";
+import { Banner } from "@/components/banner";
+import { Actions } from "./_components/actions";
 
 
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
@@ -41,7 +43,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     const categories = await db.category.findMany({
         orderBy: {
             name: "asc",
-        }
+        },
     });
 
     console.log(categories);
@@ -63,7 +65,14 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
 
     const completionText = `(${completedFields}/${totalFields})`;
 
-    return (
+        const isComplete = requiredFields.every(Boolean);
+        
+    return (<>
+   {!course.isPublished && (
+    <Banner
+        label="This course is invisible to student  because, it is not published"
+    />
+   )}
         <div className="p-6">
             <div className="flex items-center justify-between">
                 <div className="flex-col gap-y-2">
@@ -74,6 +83,11 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                         Complete all fields {completionText}
                     </span>
                 </div>
+                <Actions
+                    disabled={!isComplete}
+                    courseId={params.courseId}
+                    isPublished={course.isPublished}
+                />
             </div>
             <div className="grid-cols-1 gap-6 mt-16 md:grid-cols-2">
                 <div>
@@ -87,7 +101,6 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                         initialData={course}
                         courseId={course.id}
                     />
-                 
                     <ImageForm
                         initialData={course}
                         courseId={course.id}
@@ -100,26 +113,24 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                             value: category.id,
                         }))}
                     />
-                </div>
-                <div className="space-y-6">
+                         <div className="space-y-6">
                     <div className="flex items-center gap-x-2">
                         <IconBadge icon={ListChecks}/>
                         <h2 className="text-xl">
                             Course chapters
                         </h2>
-                   
                     </div>
                          <ChaptersForm
                         initialData={course}
                         courseId={course.id}
                     />
                 </div>
-                   
+                </div>
             </div>
             <div>
             <div className="flex items-center gap-x-2">
                 <IconBadge icon={CircleDollarSign}/>
-                <h2 className="text-xl">
+                <h2 className="text-sm">
                     Sell your course
                 </h2>
             </div>
@@ -135,13 +146,13 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                     Resources & Attachments
                 </h2>
             </div>
-            </div>
-            <AttachmentForm
+                        <AttachmentForm
                 initialData={course}
                 courseId={course.id}
             />
+            </div>
         </div>
-    );
-};
+         </>
+    )};
 
 export default CourseIdPage;

@@ -15,8 +15,6 @@ import {FileUpload} from "@/components/file-upload";
 interface ImageFormProps{
     initialData:Course
     courseId: string;
-        
-    
 }
 const formSchema = z.object({
     imageUrl: z.string().min(1, {
@@ -70,7 +68,7 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
 </div>
 {!isEditing && (
   !initialData.imageUrl?(
-    <div className="flex justify-center rounded-md items-center h-60 bg-slate-200">
+    <div className="flex items-center justify-center rounded-md h-60 bg-slate-200">
         <ImageIcon
         className="w-10 h-10 text-slate-500"
         />
@@ -91,9 +89,8 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     <FileUpload 
     endpoint="courseImage"
     onChange={(url)=>{
-        if(url)
-        
-    {onSubmit({imageUrl: url});
+        if(url){
+            onSubmit({imageUrl: url});
         }
     }}
     />
@@ -104,6 +101,4 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
 )}
     
 </div>
-
-    )
-};
+    )};

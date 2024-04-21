@@ -1,11 +1,8 @@
-import { createRouteHandler } from "uploadthing/next";
-import { authMiddleware } from "@clerk/nextjs";
+import { createNextRouteHandler } from "uploadthing/next";
+ 
 import { ourFileRouter } from "./core";
-
-export const uploadThingHandler = authMiddleware({
-  publicRoutes: ["/api/uploadthing"],
-});
-
-export const { GET: getUploadThing, POST: postUploadThing } = createRouteHandler({
+ 
+// Export routes for Next App Router
+export const { GET, POST } = createNextRouteHandler({
   router: ourFileRouter,
 });
