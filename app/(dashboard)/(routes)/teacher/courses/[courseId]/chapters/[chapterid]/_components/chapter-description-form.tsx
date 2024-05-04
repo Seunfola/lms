@@ -53,7 +53,6 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
         toast.success("Chapter updated successfully");
         toggleEdit()
         router.refresh();
-        
         }
     catch {
        toast.error("something went wrong");
@@ -67,7 +66,7 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     <Button onClick={toggleEdit} variant="ghost">
         {
             isEditing ? (
-                <> Cancel</>
+                <> Cancel </>
             ): (
                     <>
                     <Pencil className="w-4 h-4 mr-2"/> 
@@ -112,10 +111,6 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     </div>
   </form>
 </Form>
-)
-}
-    
+)}
 </div>
-
-    )
-}
+    )}

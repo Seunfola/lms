@@ -13,8 +13,6 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Editor } from "@/components/editor";
-import { Preview } from "@/components/preview";
 import { Checkbox } from "@/components/ui/checkbox";
 
 
@@ -83,7 +81,8 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
         {initialData.isFree ?(
             <>
             This Chapter is Free
-            </>):(
+            </>
+            ):(
                 <>
                 This Chapter is Paid
                 </>
@@ -98,7 +97,7 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
       control={form.control}
       name="isFree"
       render={({ field }) => (
-        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+        <FormItem className="flex flex-row items-start p-4 space-x-3 space-y-0 border rounded-md">
           <FormControl>
             <Checkbox
               checked={field.value}
@@ -121,10 +120,6 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     </div>
   </form>
 </Form>
-)
-}
-    
+)}
 </div>
-
-    )
-}
+)}

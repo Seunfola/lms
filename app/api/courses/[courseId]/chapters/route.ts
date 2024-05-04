@@ -10,11 +10,9 @@ export async function POST(req: Request, { params }: { params: { courseId: strin
         if (!userId) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
-
         const courseOwner = await db.course.findUnique({
             where: {
                 id: params.courseId,
-
                 userId: userId,
             }
         });
@@ -32,7 +30,6 @@ export async function POST(req: Request, { params }: { params: { courseId: strin
             },
         });
         const newPosition = lastChapter ? lastChapter.position + 1 : 1;
-
         const chapter = await db.chapter.create({
             data: {
                 title,

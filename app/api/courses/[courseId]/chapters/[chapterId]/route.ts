@@ -3,15 +3,15 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
-const { Video } = new Mux(
-    process.env.MUX_TOKEN_ID!,
-    process.env.MUX_TOKEN_SECRET!
-);
 
+const {Video} = new Mux({
+  tokenId: process.env.MUX_TOKEN_ID, 
+  tokenSecret: process.env.MUX_TOKEN_SECRET
+});
 
-export async function DELETE(req:Request, {params}:{params:{courseId: string; chapterId: string}}){
+export async function DELETE(req: Request, 
+    {params}:{params:{courseId: string; chapterId: string}}){
     try{
-
         const { userId } = auth();
 
         if(!userId){
@@ -20,7 +20,7 @@ export async function DELETE(req:Request, {params}:{params:{courseId: string; ch
         const ownCourse = await db.course.findUnique({
                 where:{
                     id: params.courseId,
-                    userId
+                    userId,
                 }
             });
 
@@ -48,7 +48,7 @@ if (chapter.videoUrl) {
 
     if (existingMuxData) {
         try {
-            await Video.Assets.del(existingMuxData.assetId);
+            await Video.assets.del(existingMuxData.assetId);
             await db.muxData.delete({
                 where: {
                     id: existingMuxData.id,
@@ -60,7 +60,6 @@ if (chapter.videoUrl) {
         }
     }
 }
-
         const deletedChapter = await db.chapter.delete({
             where:{
                 id: params.chapterId,
@@ -149,8 +148,6 @@ await db.muxData.create({
     }
 })
 }
-
-
 return NextResponse.json(chapter);
 
     } catch (error) {

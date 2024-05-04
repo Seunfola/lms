@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/form";
 import {Course, Chapter} from "@prisma/client";
 import {Button }from "@/components/ui/button";
-import { Loader2, Pencil, PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -16,12 +16,9 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { ChapterList } from "./chapters-list";
 
-
 interface ChaptersFormProps{
     initialData:Course & {chapters: Chapter[]}
-    courseId: string;
-        
-    
+    courseId: string;  
 }
 const formSchema = z.object({
     title: z.string().min(1),
@@ -52,7 +49,7 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     try {
         await axios.post(`/api/courses/${courseId}/chapters`, values);
         toast.success("Chapter created");
-        toggleCreating()
+        toggleCreating();
         router.refresh();
         } catch {
        toast.error("something went wrong");
@@ -61,16 +58,16 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
 
    const onReorder = async (updateData: { id: string; position: number }[]) => {
         try{
-setIsUpdating(true);
- await axios.put(`/api/courses/${courseId}/chapters/reorder`,{
+    setIsUpdating(true);
+    await axios.put(`/api/courses/${courseId}/chapters/reorder`, {
     list:updateData
  });
  toast.success("Chapters reordered");
- router.refresh();
+    router.refresh();
         }catch{
-toast.error("something went wrong")
+    toast.error("something went wrong")
         }finally{
-setIsUpdating(false);
+    setIsUpdating(false);
         }
     };
 
@@ -81,9 +78,9 @@ setIsUpdating(false);
     return(
         <div className="relative p-4 mt-6 border rounded bg-slate-100-md">
             {isUpdating && (
-                <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-m flex items-center justify-center">
+                <div className="absolute top-0 right-0 flex items-center justify-center w-full h-full bg-slate-500/20 rounded-m">
                     <Loader2
-                    className="animate-spin h-6 w-6 text-sky-700"
+                    className="w-6 h-6 animate-spin text-sky-700"
                     />
                 </div>
             )}
@@ -95,7 +92,7 @@ setIsUpdating(false);
             ): (
                     <>
                     <PlusCircle className="w-4 h-4 mr-2"/> 
-       Add a Chapter
+                        Add a Chapter
                     </>
                 )}
        
@@ -138,10 +135,9 @@ setIsUpdating(false);
     items ={initialData.chapters || []}
     />
 </div>
-
     )}
-    {isCreating && (
-        <p className="text-xs text-muted-foreground mt-4">
+    {!isCreating && (
+        <p className="mt-4 text-xs text-muted-foreground">
             Drag and drop to reorder the chapters
         </p>
     )}

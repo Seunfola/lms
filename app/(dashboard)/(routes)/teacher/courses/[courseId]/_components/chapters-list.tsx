@@ -6,7 +6,7 @@ DragDropContext,
 Droppable,
 Draggable,
 DropResult,
-} from "@hello-pangea/dnd"
+} from "@hello-pangea/dnd";
 
 import { cn } from "@/lib/utils";
 import { Grip, Pencil } from "lucide-react";
@@ -17,7 +17,6 @@ interface ChaptersListProps{
     onReorder: (updateData:{ id: string; position: number}[]) => void;
     onEdit: (id: string) => void;
 }
-
 
 export const ChapterList = ({
     items,
@@ -60,7 +59,6 @@ onReorder(bulkUpdateData);
 if(!isMounted){
     return null;
 }
-
 
     return(
        <DragDropContext onDragEnd={onDragEnd}>

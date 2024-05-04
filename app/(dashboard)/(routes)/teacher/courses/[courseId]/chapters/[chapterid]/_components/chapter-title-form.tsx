@@ -12,8 +12,6 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
-
 interface ChapterTitleFormProps{
     initialData:{
         title:string;
@@ -90,7 +88,7 @@ const onSubmit = async (values: z.infer<typeof formSchema>) =>{
           <FormControl>
             <Input
               disabled={isSubmitting}
-              placeholder="e.g., Introduction to course"
+              placeholder="e.g., Introduction to the course"
               {...field}
             />
           </FormControl>

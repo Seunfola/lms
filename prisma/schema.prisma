@@ -50,24 +50,25 @@ model Attachment {
 
   @@index([courseId])
 }
-model Chapter{
-  id String @id @default(uuid())
-  title String
+model Chapter {
+  id          String  @id @default(uuid())
+  title       String
   description String?
-  videoUrl String?
-  position Int
+  videoUrl    String?
+  position    Int
   isPublished Boolean @default(false)
-  isFree Boolean @default(false)
+  isFree      Boolean @default(false)
 
-  muxData MuxData?
+  muxData     MuxData?
 
-  courseId String
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   userProgress userProgress[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   @@index([courseId])
 }
 
