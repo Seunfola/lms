@@ -3,15 +3,14 @@ import { IconBadge } from "@/components/icon-badge";
 import {db} from "@/lib/db";
 import { CircleDollarSign, LayoutDashboard, ListChecks, File } from "lucide-react";
 import {redirect} from "next/navigation";
+import { Actions } from "./_components/actions";
+import { Banner } from "@/components/banner";
 import { TitleForm } from "./_components/title-form";
 import { ImageForm } from "./_components/image-form";
 import { CategoryForm } from "./_components/category-form";
+import { ChaptersForm } from "./_components/chapters-form";
 import { PriceForm } from "./_components/price-form";
 import { AttachmentForm } from "./_components/attachment-form";
-import { ChaptersForm } from "./_components/chapters-form";
-import { Banner } from "@/components/banner";
-import { Actions } from "./_components/actions";
-
 
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
 
@@ -45,8 +44,6 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
             name: "asc",
         },
     });
-
-    console.log(categories);
 
     if (!course) {
         return redirect("/");
@@ -93,7 +90,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
        <div className="grid grid-cols-1 gap-6 mt-16 md:grid-cols-2">
            <div>
                <div className="flex items-center mb-4">
-                   <IconBadge size="sm" variant="sm" icon={LayoutDashboard}/>
+                   <IconBadge size="sm" variant="warning" icon={LayoutDashboard}/>
                    <h2 className="text-xl">
                        Customize your course
                    </h2>
@@ -156,6 +153,4 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
        </div>
    </div>
 </>
-)}
-
-export default CourseIdPage;
+)};

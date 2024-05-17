@@ -20,8 +20,7 @@ import { Preview } from "@/components/preview";
 interface ChapterDescriptionFormProps{
     initialData:Chapter;
     courseId: string;
-    chapterId: string;
-    
+    chapterId: string;  
 }
 const formSchema = z.object({
     description: z.string().min(1),
@@ -30,7 +29,7 @@ const formSchema = z.object({
 export const ChapterDescriptionForm =({
     initialData,
     courseId,
-    chapterId
+    chapterId,
 }:ChapterDescriptionFormProps) =>{
 
 const [isEditing, setIsEditing] = useState(false);
@@ -49,7 +48,7 @@ const {isSubmitting, isValid} = form.formState;
 
 const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     try {
-        await axios.patch(`/api/courses/${courseId}/chapters/{chapterId}`, values);
+        await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}`, values);
         toast.success("Chapter updated successfully");
         toggleEdit()
         router.refresh();
@@ -66,7 +65,7 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     <Button onClick={toggleEdit} variant="ghost">
         {
             isEditing ? (
-                <> Cancel </>
+                <> Cancel</>
             ): (
                     <>
                     <Pencil className="w-4 h-4 mr-2"/> 
@@ -77,12 +76,11 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     </Button>
 </div>
 {!isEditing && (
-    <div className={cn("text-sm mt-2", !initialData.description && "text-slate-500 italic")}>
+    <div className={cn("text-sm mt-2", 
+    !initialData.description && "text-slate-500 italic")}>
         {!initialData.description && "No description"}
-        {initialData.description && (
-            <Preview
-            value={initialData.description}
-            />
+        { initialData.description && (
+            <Preview value={initialData.description}/>
         )}
     </div>
 )}    
@@ -111,6 +109,10 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     </div>
   </form>
 </Form>
-)}
+)
+}
+    
 </div>
-    )}
+
+    )
+}

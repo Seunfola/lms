@@ -13,14 +13,14 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Preview } from "@/components/preview";
 import { Checkbox } from "@/components/ui/checkbox";
 
 
 interface ChapterAccessFormProps{
     initialData:Chapter;
     courseId: string;
-    chapterId: string;
-    
+    chapterId: string;  
 }
 const formSchema = z.object({
     isFree: z.boolean().default(false),
@@ -41,18 +41,17 @@ const router = useRouter();
 const form = useForm<z.infer<typeof formSchema>>({
 resolver: zodResolver(formSchema),
 defaultValues:{
-        isFree: !!initialData.isFree
+    isFree: !!initialData.isFree
 },
 });
 const {isSubmitting, isValid} = form.formState;
 
 const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     try {
-        await axios.patch(`/api/courses/${courseId}/chapters/{chapterId}`, values);
+        await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}`, values);
         toast.success("Chapter updated successfully");
         toggleEdit()
         router.refresh();
-        
         }
     catch {
        toast.error("something went wrong");
@@ -62,7 +61,7 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     return(
         <div className="p-4 mt-6 border rounded bg-slate-100-md">
 <div className="flex items-center justify-between font-medium">
-    Chapter access 
+    Chapter access
     <Button onClick={toggleEdit} variant="ghost">
         {
             isEditing ? (
@@ -77,16 +76,13 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     </Button>
 </div>
 {!isEditing && (
-    <p className={cn("text-sm mt-2", !initialData.isFree && "text-slate-500 italic")}>
-        {initialData.isFree ?(
-            <>
-            This Chapter is Free
-            </>
-            ):(
-                <>
-                This Chapter is Paid
-                </>
-            )}
+    <p className={cn("text-sm mt-2", 
+    !initialData.isFree && "text-slate-500 italic")}>
+        { initialData.isFree ?(
+            <>This chapter is free for preview.</>
+        ):(
+            <>This chapter is not free.</>
+        )}
     </p>
 )}    
 {
@@ -97,19 +93,18 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
       control={form.control}
       name="isFree"
       render={({ field }) => (
-        <FormItem className="flex flex-row items-start p-4 space-x-3 space-y-0 border rounded-md">
+        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
           <FormControl>
             <Checkbox
               checked={field.value}
-              onChange={field.onChange}
+              onCheckedChange={field.onChange}
             />
           </FormControl>
           <div className="space-y-1 leading-none">
-<FormDescription>
-    To make the chapter free, check this box
-</FormDescription>
-          </div>
-          <FormMessage/>
+            <FormDescription>
+                check this box if you want to make this chapter free for preview
+            </FormDescription>
+           </div> 
         </FormItem>
       )}
     />
@@ -120,6 +115,7 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     </div>
   </form>
 </Form>
-)}
+)}   
 </div>
-)}
+    )
+}

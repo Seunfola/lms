@@ -1,10 +1,10 @@
 'use client';
 import * as z from "zod";
 import axios from "axios";
-import MuxPlayer from "@mux/mux-player-react";
+import Image from "next/image";
 import {Chapter, MuxData} from "@prisma/client";
 import {Button }from "@/components/ui/button";
-import { Pencil, PlusCircle, Video,} from "lucide-react";
+import { Pencil, PlusCircle, ImageIcon, Video} from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -13,11 +13,9 @@ import {FileUpload} from "@/components/file-upload";
 
 
 interface ChapterVideoFormProps{
-    initialData:Chapter & { muxData?: MuxData | null}
+    initialData: Chapter & { muxData?: MuxData | null };
     courseId: string;
     chapterId: string;
-        
-    
 }
 const formSchema = z.object({
     videoUrl: z.string().min(1),
@@ -37,7 +35,7 @@ const router = useRouter();
 
 const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     try {
-        await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}`, values);
+        await axios.patch(`/api/courses/${courseId}/chapter/${chapterId}`, values);
         toast.success("Chapter updated successfully");
         toggleEdit()
         router.refresh(); 
@@ -48,7 +46,7 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
 
     return( <div className="p-4 mt-6 border bg-slate-100 md-rounded">
 <div className="flex items-center justify-between font-medium">
-    Chapter Video
+    Course image
  <Button onClick={toggleEdit} variant="ghost">
     {isEditing && (
         <>Cancel</>
@@ -56,7 +54,7 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     {!isEditing && !initialData.videoUrl && (
         <>
             <PlusCircle className="w-4 h-4 mr-2"/> 
-            Add a video
+            Add an video
         </>
     )}
     {!isEditing && initialData.videoUrl && (
@@ -70,16 +68,14 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
 </div>
 {!isEditing && (
   !initialData.videoUrl?(
-    <div className="flex justify-center rounded-md items-center h-60 bg-slate-200">
+    <div className="flex items-center justify-center rounded-md h-60 bg-slate-200">
         <Video
         className="w-10 h-10 text-slate-500"
         />
     </div>
   ):(
   <div className="relative mt-2 aspect-video">
-   <MuxPlayer 
-   playbackId={initialData?.muxData?.playbackId || ""}
-   />
+    Video Uploaded
     </div>  
   )
 )}    
@@ -94,15 +90,16 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     }}
     />
 <div className="mt-4 text-xs text-muted-foreground">
-upload the chapter&apos;s video
+Upload this chapter&apos;s video
     </div>
     </div>
 )}
-  {initialData.videoUrl && !isEditing &&(
-    <div className="text-xz text-muted-foreground mt-2">
-        Be patient because videos can take a while before it is uploaded
-    </div>
-  )
-  }  
+   {
+    initialData.videoUrl && !isEditing && (
+        <div className="text-xs text-muted-foreground mt-2">
+            Videos can take a few minutes. Kindly refresh if it does not show.
+        </div>
+    )
+   } 
 </div>
-)};
+    )};

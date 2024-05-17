@@ -12,6 +12,8 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+
+
 interface ChapterTitleFormProps{
     initialData:{
         title:string;
@@ -26,7 +28,9 @@ const formSchema = z.object({
 });
 
 export const ChapterTitleForm =({
-    initialData, courseId, chapterId,
+    initialData,
+    courseId,
+    chapterId,
 }:ChapterTitleFormProps) =>{
 
 const [isEditing, setIsEditing] = useState(false);
@@ -44,7 +48,7 @@ const {isSubmitting, isValid} = form.formState;
 const onSubmit = async (values: z.infer<typeof formSchema>) =>{
     try {
         await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}`, values);
-        toast.success("Chapter Updated");
+        toast.success("Course updated successfully");
         toggleEdit()
         router.refresh();
         
@@ -65,7 +69,7 @@ const onSubmit = async (values: z.infer<typeof formSchema>) =>{
             ): (
                     <>
                     <Pencil className="w-4 h-4 mr-2"/> 
-       Edit title
+       Edit chapter title
                     </>
                 )}
        
@@ -88,7 +92,7 @@ const onSubmit = async (values: z.infer<typeof formSchema>) =>{
           <FormControl>
             <Input
               disabled={isSubmitting}
-              placeholder="e.g., Introduction to the course"
+              placeholder="e.g., Introduction to frontend engineering"
               {...field}
             />
           </FormControl>

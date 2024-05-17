@@ -1,5 +1,6 @@
 "use client"
 import * as React from "react";
+import { useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,9 +26,13 @@ interface ComboboxProps{
 };
 
 export const Combobox = ({
-options, value, onChange}: ComboboxProps) => {
+options, value, onChange }: ComboboxProps) => {
     
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false);
+  
+if (!options) {
+    return <div>Loading options...</div>;
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -38,8 +43,7 @@ options, value, onChange}: ComboboxProps) => {
           aria-expanded={open}
           className="justify-between w-full"
         >
-          {value
-            ? options.find((option) => option.value === value)?.label : "Select option..."}
+          {value ? options.find((option) => option.value === value)?.label : "Select option..."}
           <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
         </Button>
       </PopoverTrigger>
