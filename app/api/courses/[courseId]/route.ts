@@ -3,10 +3,11 @@ import { auth } from "@clerk/nextjs";
 import { db } from "@/lib/db";
 import Mux from "@mux/mux-node";
 
-const { Video } = new Mux(
-    process.env.MUX_TOKEN_ID!,
-    process.env.MUX_TOKEN_SECRET!,
-);
+
+const mux = new Mux({
+  tokenId: process.env['MUX_TOKEN_ID'], 
+  tokenSecret: process.env['MUX_TOKEN_SECRET'], 
+});
 
 export async function DELETE(req: Request, { params }: { params: { courseId: string } }) {
     try {
@@ -36,13 +37,13 @@ export async function DELETE(req: Request, { params }: { params: { courseId: str
 
         for (const chapter of course.chapters) {
             if (chapter.muxData?.assetId) {
-                await Video.Assets.del(chapter.muxData.assetId);
+                await mux.video.assets.delete(chapter.muxData.assetId);
             }
         }
 
         const deletedCourse = await db.course.delete({
             where: {
-                id: params.courseId
+                id: params.courseId,
             },
         });
 

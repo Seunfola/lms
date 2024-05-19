@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
 import { db } from "@/lib/db";
-import { Chapter } from "@prisma/client";
-
-
 
 export async function PATCH( req: Request, {params}:{params:{ courseId: string; chapterId: string;}}){
     try {
@@ -12,18 +9,19 @@ export async function PATCH( req: Request, {params}:{params:{ courseId: string; 
         if(!userId){
             return new NextResponse("Unauthorized", { status: 401});
         }
-        const course = await db.course.findUnique({
+        
+        const ownCourse = await db.course.findUnique({
             where:{
                 id: params.courseId,
-                userId
+                userId,
             }
         });
 
-        if (!course){
+        if (!ownCourse){
             return new NextResponse("Unauthorized", { status: 401});
         }
 
-        const unpublishedCourse = await db.course.update({
+        const unpublishedChapter = await db.course.update({
             where:{
                 id: params.courseId,
                 userId,
@@ -33,24 +31,24 @@ export async function PATCH( req: Request, {params}:{params:{ courseId: string; 
             },
         });
 
-// const publishedChaptersInCourse = await db.chapter.findMany({
-    // where:{
-        // courseId: params.courseId,
-        // isPublished: true,
-    // }
-// });
-// 
-// if (!publishedChaptersInCourse.length){
-    // await db.course.update({
-        // where: {
-            // id: params.courseId
-        // },
-        // data:{
-            // isPublished: false,
-        // }
-    // });
-// }
-        return NextResponse.json(unpublishedCourse);
+const publishedChaptersInCourse = await db.chapter.findMany({
+    where:{
+        courseId: params.courseId,
+        isPublished: true,
+    }
+});
+
+if (!publishedChaptersInCourse.length){
+    await db.course.update({
+        where: {
+            id: params.courseId
+        },
+        data:{
+            isPublished: false,
+        }
+    });
+}
+        return NextResponse.json(unpublishedChapter);
 
     } catch (error) {
         console.log("[CHAPTER_UNPUBLISH]", error);

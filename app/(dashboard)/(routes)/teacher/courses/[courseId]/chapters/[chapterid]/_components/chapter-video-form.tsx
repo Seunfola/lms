@@ -1,7 +1,7 @@
 'use client';
 import * as z from "zod";
 import axios from "axios";
-import Image from "next/image";
+import MuxPlayer from "@mux/mux-player-react";
 import {Chapter, MuxData} from "@prisma/client";
 import {Button }from "@/components/ui/button";
 import { Pencil, PlusCircle, ImageIcon, Video} from "lucide-react";
@@ -54,7 +54,7 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     {!isEditing && !initialData.videoUrl && (
         <>
             <PlusCircle className="w-4 h-4 mr-2"/> 
-            Add an video
+            Add a video
         </>
     )}
     {!isEditing && initialData.videoUrl && (
@@ -75,7 +75,7 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
     </div>
   ):(
   <div className="relative mt-2 aspect-video">
-    Video Uploaded
+    <MuxPlayer playbackId={initialData?.muxData?.playbackId || ""}/>
     </div>  
   )
 )}    
@@ -96,7 +96,7 @@ Upload this chapter&apos;s video
 )}
    {
     initialData.videoUrl && !isEditing && (
-        <div className="text-xs text-muted-foreground mt-2">
+        <div className="mt-2 text-xs text-muted-foreground">
             Videos can take a few minutes. Kindly refresh if it does not show.
         </div>
     )
