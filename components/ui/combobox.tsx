@@ -2,6 +2,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,8 +56,9 @@ if (!options) {
             {options.map((option) => (
               <CommandItem
                 key={option.value}
-                onSelect={() => {
-                  onChange(option.value === value ? "" : option.value)
+                value={option.value}
+                onSelect={(optionValue) => {
+                  onChange(optionValue === value ? "" : optionValue)
                   setOpen(false)
                 }}
               >
@@ -74,4 +76,4 @@ if (!options) {
       </PopoverContent>
     </Popover>
   )
-}
+};

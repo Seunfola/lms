@@ -40,6 +40,7 @@ export const CategoryForm = ({
             categoryId: initialData?.categoryId || "",
         },
     });
+console.log({options});
 
     const { isSubmitting, isValid } = form.formState;
 
