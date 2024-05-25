@@ -1,46 +1,46 @@
-import Stripe from "stripe";
-import { headers } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+import { stripe } from '@/lib/stripe';
+import { db } from '@/lib/db';
 
-import { stripe } from "@/lib/stripe";
-import { db } from "@/lib/db";
+export async function POST(req: Request) {
+  try {
+    // Parse the request body
+    const { sessionId } = await req.json();
 
-export async function POST ( req: Request){
-    const body = await req.text();
-    const signature = headers().get("Stripe-Signature") as string;
-
-    let event: Stripe.Event;
-
-    try {
-        event = stripe.webhooks.constructEvent(
-            body, signature, process.env.STRIPE_WEBHOOK_SECRET!
-        )
-    } catch (error: any) {
-        return new NextResponse(`Webhook Error: ${error.message}`, { status: 400})
+    if (!sessionId) {
+      return new NextResponse('Missing sessionId', { status: 400 });
     }
 
-    const session = event.data.object as Stripe.Checkout.Session;
-    const userId = session?.metadata?.userId;
-    const courseId = session?.metadata?.courseId;
+    // Retrieve the session from Stripe
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    if(event.type ==="checkout.session.completed"){
-        if(!userId || !courseId){
-            return new NextResponse(`Webhook error: Missing metaData, { status: 400}`);
-        }
-        
-    await db.purchase.create({
-        data:{
-            courseId: courseId,
-            userId: userId,
-        }
-    });
-
+    if (!session) {
+      return new NextResponse('Invalid sessionId', { status: 400 });
     }
-            else{
-   return new NextResponse(`Webhook Error: Unhandled Event type ${event.type}`, { status: 200})
-}
 
-return new NextResponse(null, { status: 200});
+    // Extract necessary metadata
+    const userId = session.metadata?.userId;
+    const courseId = session.metadata?.courseId;
 
+    if (!userId || !courseId) {
+      return new NextResponse('Missing metadata', { status: 400 });
+    }
+
+    // Ensure the payment is completed
+    if (session.payment_status === 'paid') {
+      // Update the database
+      await db.purchase.create({
+        data: {
+          courseId: courseId,
+          userId: userId,
+        },
+      });
+
+      return new NextResponse('Payment confirmed and purchase recorded', { status: 200 });
+    } else {
+      return new NextResponse('Payment not completed', { status: 400 });
+    }
+  } catch (error: any) {
+    return new NextResponse(`Error: ${error.message}`, { status: 500 });
+  }
 }
- 

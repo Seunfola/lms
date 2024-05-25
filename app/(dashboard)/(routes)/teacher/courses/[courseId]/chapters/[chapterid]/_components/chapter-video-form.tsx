@@ -46,7 +46,7 @@ const onSubmit=async (values: z.infer<typeof formSchema>) =>{
 
     return( <div className="p-4 mt-6 border bg-slate-100 md-rounded">
 <div className="flex items-center justify-between font-medium">
-    Course image
+    Course Video
  <Button onClick={toggleEdit} variant="ghost">
     {isEditing && (
         <>Cancel</>

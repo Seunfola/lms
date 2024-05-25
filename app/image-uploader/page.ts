@@ -1,10 +1,8 @@
-"use client";
- 
-import { UploadButton } from "@/utils/uploadthing";
+import { UploadButton } from "@/lib/uploadthing";
  
 export default function Home() {
   return (
-    <main className="flex flex-col items-center justify-between min-h-screen p-24">
+    <main className= "flex flex-col items-center justify-between min-h-screen p-24">
       <UploadButton
         endpoint="imageUploader"
         onClientUploadComplete={(res) => {
@@ -13,7 +11,7 @@ export default function Home() {
           alert("Upload Completed");
         }}
         onUploadError={(error: Error) => {
-          // Do something with the error.
+          // Do something with the error.c
           alert(`ERROR! ${error.message}`);
         }}
       />

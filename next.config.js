@@ -4,8 +4,20 @@ const nextConfig = {
         domains: [
             "utfs.io"
         ]
-    }
+    },
+    async headers() {
+        return [
+            {
+                source: '/(.*)',
+                headers: [
+                    {
+                        key: 'Content-Security-Policy',
+                        value: "script-src 'unsafe-eval'",
+                    },
+                ],
+            },
+        ]
+    },
 };
 
 module.exports = nextConfig;
-

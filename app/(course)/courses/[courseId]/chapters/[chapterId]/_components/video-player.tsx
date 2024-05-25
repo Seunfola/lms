@@ -32,19 +32,46 @@ export const VideoPlayer = ({
 }: VideoPlayerProps) =>{
     const [isReady, setIsReady] =useState(false);
 
+    const router = useRouter();
+    const confetti = useConfettiStore();
+
+    const onEnd = async () =>{
+        try{
+          if(completeOnEnd){
+            await axios.put(`/api/courses/${courseId}/chapters/${chapterId}/progress`, {
+                isCompleted: true,
+            });
+          }  
+}catch{
+    toast.error("Something went wrong")
+    
+}
+
+    if(!nextChapterId){
+        confetti.onOpen();
+    }
+    
+    toast.success("progress updated");
+    router.refresh();
+
+    if (nextChapterId){
+        router.push(`/courses/${courseId}/chapters/${nextChapterId}`)
+    }
+    }
+
     return(
         <div className="relative aspect-video">
 
            {!isReady && !isLocked &&(
             <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
-                <Loader2 className="h-8 w-8 animate-spin text-secondary"/>
+                <Loader2 className="w-8 h-8 animate-spin text-secondary"/>
             </div>
 
            )}
            {
             isLocked &&(
-                <div className="absolute insect-0 flex items-center justify-center bg-slate-800 flex-col gap-y-2 text-secondary">
-                    <Lock className="h-8 w-8"/>
+                <div className="absolute flex flex-col items-center justify-center insect-0 bg-slate-800 gap-y-2 text-secondary">
+                    <Lock className="w-8 h-8"/>
                     <p className="text-sm"> This Chapter is Locked</p>
                 </div>
             )}
@@ -55,7 +82,7 @@ export const VideoPlayer = ({
                     playbackId={playbackId}
                     className={cn( !isReady && "hidden")}
                     onCanPlay={()=> setIsReady(true)}
-                    onEnded={()=>{}}
+                    onEnded={onEnd}
                     autoPlay
                     />
                 )
