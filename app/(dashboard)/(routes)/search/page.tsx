@@ -29,7 +29,7 @@ const SearchPage = async ( {searchParams}:SearchPageProps) =>{
     const courses = await getCourses({
         userId, 
         ...searchParams,
-    })
+    });
     
     return(
         <>

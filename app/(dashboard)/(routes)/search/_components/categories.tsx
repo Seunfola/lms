@@ -1,5 +1,7 @@
-"use client"
+"use client";
+
 import { Category } from "@prisma/client";
+
 import { 
   FcMultipleDevices, 
   FcCommandLine,
@@ -17,20 +19,24 @@ interface CategoriesProps {
 }
 
 const iconMap: Record<Category["name"], IconType> = {
-    "Web Development": FcEngineering,
+    "Web-Development": FcEngineering,
     "Robotics": FcMultipleDevices,
-    "Data Analysis": FcComboChart,
-    "Cloud Engineering": FcCommandLine,
-    "IT Support": FcCustomerSupport,
+    "Data-Analysis": FcComboChart,
+    "Cloud-Engineering": FcCommandLine,
+    "IT-Support": FcCustomerSupport,
     "UI/UX": FcTwoSmartphones,
-    "Project Management": FcTemplate,
+    "Project-Management": FcTemplate,
 };
 
-export const Categories = ({ items }: CategoriesProps) => {
+export const Categories = ({ items, }: CategoriesProps) => {
     return (
         <div className="flex items-center pb-2 overflow-x-auto gap-x-2">
             {items.map((item) => (
-                <CategoryItem key={item.id} label={item.name} icon={iconMap[item.name]} value={item.id} />
+                <CategoryItem 
+                key={item.id} 
+                label={item.name} 
+                icon={iconMap[item.name]} 
+                value={item.id} />
             ))}
         </div>
     );

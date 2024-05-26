@@ -27,24 +27,29 @@ export const ChapterVideoForm =({
     chapterId,
 }:ChapterVideoFormProps) =>{
 
+
 const [isEditing, setIsEditing] = useState(false);
 
 const toggleEdit = () => setIsEditing((current) => !current);
 
 const router = useRouter();
 
-const onSubmit=async (values: z.infer<typeof formSchema>) =>{
+const onSubmit = async (values: z.infer<typeof formSchema>) =>{
+    
+        console.log({values});
     try {
-        await axios.patch(`/api/courses/${courseId}/chapter/${chapterId}`, values);
+        await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}`, values);
         toast.success("Chapter updated successfully");
-        toggleEdit()
+        toggleEdit();
         router.refresh(); 
         }catch {
        toast.error("something went wrong");
     }
    }
 
-    return( <div className="p-4 mt-6 border bg-slate-100 md-rounded">
+    return( 
+    
+    <div className="p-4 mt-6 border bg-slate-100 md-rounded">
 <div className="flex items-center justify-between font-medium">
     Course Video
  <Button onClick={toggleEdit} variant="ghost">

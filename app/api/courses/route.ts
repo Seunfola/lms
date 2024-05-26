@@ -8,7 +8,7 @@ export async function POST(req: Request) {
         const { userId } = auth();
         const { title } = await req.json();
 
-        if (!userId || isTutor(userId)) {
+        if (!userId || !isTutor(userId)) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
         const course = await db.course.create({ 

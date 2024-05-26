@@ -24,7 +24,7 @@ const onClick = async () => {
     setIsLoading(true);
     
     if (isPublished) {
-      await axios.delete(`/api/course/${courseId}/unpublish`);
+      await axios.delete(`/api/course/${courseId}/unpublished`);
       toast.success("Course unpublished");
     } else {
       await axios.patch(`/api/courses/${courseId}/publish`);

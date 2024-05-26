@@ -91,7 +91,11 @@ export async function DELETE(req: Request, { params }: { params: { courseId: str
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { courseId: string; chapterId: string } }) {
+export async function PATCH(
+  req: Request, 
+  { params }: 
+  { params: { courseId: string; chapterId: string } }) {
+    
   try {
     const { userId } = auth();
     const { isPublished, ...values } = await req.json();
@@ -120,7 +124,8 @@ export async function PATCH(req: Request, { params }: { params: { courseId: stri
         ...values,
       }
     });
-
+    console.log({chapter});
+    
     if (values.videoUrl) {
       const existingMuxData = await db.muxData.findFirst({
         where: {
@@ -138,7 +143,7 @@ export async function PATCH(req: Request, { params }: { params: { courseId: stri
       }
 
       const asset = await mux.video.assets.create({
-        input: values.videoUrl,
+        input: [{url: values.videoUrl}],
         playback_policy: ['public'],
         test: false,
       });

@@ -46,8 +46,6 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
         },
     });
 
-    console.log(categories);
-
     if (!course) {
         return redirect("/");
     }
@@ -61,6 +59,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
         course.chapters.some(chapter => chapter.isPublished),
     ];
     const totalFields = requiredFields.length;
+    
     const completedFields = requiredFields.filter(Boolean).length;
 
     const completionText = `(${completedFields}/${totalFields})`;

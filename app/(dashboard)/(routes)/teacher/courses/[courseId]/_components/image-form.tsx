@@ -15,7 +15,8 @@ import {FileUpload} from "@/components/file-upload";
 interface ImageFormProps{
     initialData:Course
     courseId: string;
-}
+};
+
 const formSchema = z.object({
     imageUrl: z.string().min(1, {
         message: "Image is required",
@@ -33,7 +34,7 @@ const toggleEdit = () => setIsEditing((current) => !current);
 
 const router = useRouter();
 
-const onSubmit=async (values: z.infer<typeof formSchema>) =>{
+const onSubmit = async (values: z.infer<typeof formSchema>) =>{
     try {
         await axios.patch(`/api/courses/${courseId}`, values);
         toast.success("Course updated successfully");

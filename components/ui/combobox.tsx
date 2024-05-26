@@ -11,6 +11,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command";
 
 import {
@@ -51,6 +52,7 @@ if (!options) {
       <PopoverContent className="w-full p-0">
         <Command>
           <CommandInput placeholder="Search option..." />
+          <CommandList>
           <CommandEmpty>No option found.</CommandEmpty>
           <CommandGroup>
             {options.map((option) => (
@@ -72,6 +74,7 @@ if (!options) {
               </CommandItem>
             ))}
           </CommandGroup>
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>
