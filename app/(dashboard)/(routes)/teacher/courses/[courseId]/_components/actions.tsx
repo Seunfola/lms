@@ -24,8 +24,9 @@ const onClick = async () => {
     setIsLoading(true);
     
     if (isPublished) {
-      await axios.delete(`/api/course/${courseId}/unpublished`);
+      await axios.delete(`/api/courses/${courseId}/unpublish`);
       toast.success("Course unpublished");
+      
     } else {
       await axios.patch(`/api/courses/${courseId}/publish`);
       toast.success("Course published");
@@ -44,11 +45,9 @@ const onDelete = async () => {
   try {
     setIsLoading(true);
     
-    await axios.delete(`/api/course/${courseId}`);
+    await axios.delete(`/api/courses/${courseId}`);
     toast.success("Course deleted successfully");
-    router.refresh();
     router.push(`/teacher/course/`);
-    router.refresh();
     
   } catch (error) {
     toast.error("Something went wrong");
@@ -56,6 +55,7 @@ const onDelete = async () => {
     setIsLoading(false);
   }
 };
+
 
     return(
         <div className="flex items-center gap-x-2">

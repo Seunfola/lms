@@ -124,7 +124,7 @@ export async function PATCH(
         ...values,
       }
     });
-    console.log({chapter});
+   
     
     if (values.videoUrl) {
       const existingMuxData = await db.muxData.findFirst({
@@ -134,7 +134,7 @@ export async function PATCH(
       });
 
       if (existingMuxData) {
-    await mux.video.assets.delete(existingMuxData.assetId);
+    await mux.video.assets.del(existingMuxData.assetId);
         await db.muxData.delete({
           where: {
             id: existingMuxData.id,
