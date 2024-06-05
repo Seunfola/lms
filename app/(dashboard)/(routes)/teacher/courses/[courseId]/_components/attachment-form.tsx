@@ -14,10 +14,9 @@ import {FileUpload} from "@/components/file-upload";
 
 interface AttachmentFormProps{
     initialData:Course & {attachments : Attachment[]}
-    courseId: string;
-        
+    courseId: string;    
+    };
     
-}
 const formSchema = z.object({
     url: z.string().min(1),
 });
@@ -45,19 +44,18 @@ const onSubmit = async (values: z.infer<typeof formSchema>) =>{
     }
    }
 
- const onDelete = async (id: string) => {
-    try {
-        setDeletingId(id);
-        await axios.delete(`/api/courses/${courseId}/attachments/${id}`);
-        toast.success("Attachment deleted");
-        router.refresh();
-    } catch (error) {
-        toast.error("Could not delete attachment");
-    } finally {
-        setDeletingId(null);
+  const onDelete = async (id: string) => {
+        try {
+            setDeletingId(id);
+            await axios.delete(`/api/courses/${courseId}/attachments/${id}`);
+            toast.success("Attachment deleted");
+            router.refresh();
+        } catch (error) {
+            toast.error("Could not delete attachment");
+        } finally {
+            setDeletingId(null);
+        }
     }
-}
-
 
     return( 
    <div className="p-4 mt-6 border rounded-md bg-slate-100">

@@ -3,15 +3,14 @@ import { IconBadge } from "@/components/icon-badge";
 import { db } from "@/lib/db";
 import { CircleDollarSign, LayoutDashboard, ListChecks, File } from "lucide-react";
 import { redirect } from "next/navigation";
+import { TitleForm } from "../_components/title-form";
+import { ImageForm } from "../_components/image-form";
+import { CategoryForm } from "../_components/category-form";
+import { PriceForm } from "../_components/price-form";
+import { AttachmentForm } from "../_components/attachment-form";
+import { ChaptersForm } from "../_components/chapters-form";
 import { Banner } from "@/components/banner";
-import { Actions } from "./_components/actions";
-import { TitleForm } from "./_components/title-form";
-import { ImageForm } from "./_components/image-form";
-import { CategoryForm } from "./_components/category-form";
-import { ChaptersForm } from "./_components/chapters-form";
-import { PriceForm } from "./_components/price-form";
-import { AttachmentForm } from "./_components/attachment-form";
-
+import { Actions } from "../_components/actions";
 
 const CourseIdPage = async ({ params } :  { params: { courseId: string } }) => {
   const { userId } = auth();
@@ -54,8 +53,8 @@ const CourseIdPage = async ({ params } :  { params: { courseId: string } }) => {
     course.description,
     course.imageUrl,
     course.price,
-     course.chapters.length > 0 && course.chapters.some((chapter) => chapter.isPublished) ? true : false,
-    course.attachments.length > 0 ? true : false,
+    course.chapters.length > 0 && course.chapters.some((chapter) => chapter.isPublished),
+    course.attachments.length > 0,
   ];
 
   const totalFields = requiredFields.length;
