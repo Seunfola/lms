@@ -10,8 +10,6 @@ import { useRouter } from "next/navigation";
 import {FileUpload} from "@/components/file-upload";
 
 
-
-
 interface AttachmentFormProps{
     initialData:Course & {attachments : Attachment[]}
     courseId: string;    
