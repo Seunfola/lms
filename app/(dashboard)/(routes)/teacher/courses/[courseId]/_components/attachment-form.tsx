@@ -25,7 +25,7 @@ export const AttachmentForm =({
 }:AttachmentFormProps) =>{
 
 const [isEditing, setIsEditing] = useState(false);
-const [deletingId, setDeletingId] =useState< |null >(null);
+const [deletingId, setDeletingId] =useState<string |null >(null);
 
 const toggleEdit = () => setIsEditing((current) => !current);
 
