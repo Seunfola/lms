@@ -134,7 +134,7 @@ export async function PATCH(
       });
 
       if (existingMuxData) {
-    await mux.video.assets.del(existingMuxData.assetId);
+    await mux.video.assets.delete(existingMuxData.assetId);
         await db.muxData.delete({
           where: {
             id: existingMuxData.id,
