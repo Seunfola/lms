@@ -1,5 +1,4 @@
 "use client"
-
 import { ConfirmModal } from "@/components/modals/confirm-modal";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
@@ -24,15 +23,15 @@ const onClick = async () => {
     setIsLoading(true);
     
     if (isPublished) {
-      await axios.delete(`/api/courses/${courseId}/unpublish`);
+      await axios.patch(`/api/courses/${courseId}/unpublish`);
+      router.push(`/courses/${courseId}`);
       toast.success("Course unpublished");
-      
     } else {
       await axios.patch(`/api/courses/${courseId}/publish`);
       toast.success("Course published");
       confetti.onOpen();
+      router.push(`/courses`);
     }
-    router.refresh();
     
   } catch (error) {
     toast.error("Something went wrong");
@@ -47,7 +46,7 @@ const onDelete = async () => {
     
     await axios.delete(`/api/courses/${courseId}`);
     toast.success("Course deleted successfully");
-    router.push(`/teacher/course/`);
+    
     
   } catch (error) {
     toast.error("Something went wrong");
@@ -59,12 +58,12 @@ const onDelete = async () => {
 
     return(
         <div className="flex items-center gap-x-2">
-            <Button onClick={()=>{}}
+            <Button onClick={onClick}
             disabled={disabled || isLoading }
             variant="outline"
             size="sm"
             >
-                {isPublished ? "Not Published" : "Published"}
+                {isPublished ? "Unpublish" : "Publish"}
             </Button>
             <ConfirmModal onConfirm={onDelete}>
                 <Button size="sm" disabled={isLoading}>

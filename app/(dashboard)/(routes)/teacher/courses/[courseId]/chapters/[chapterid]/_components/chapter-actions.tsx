@@ -25,15 +25,15 @@ const onClick = async () => {
     setIsLoading(true);
     
     if (isPublished) {
-      await axios.delete(`/api/course/${courseId}/chapters/${chapterId}/unpublish`);
+      await axios.delete(`/api/courses/${courseId}/chapters/${chapterId}/unpublish`);
       toast.success("Course unpublished");
     } else {
       await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}/publish`);
       toast.success("Course published");
       confetti.onOpen();
     }
+    router.push(`/teacher/courses/${courseId}`);
     router.refresh();
-    
   } catch (error) {
     toast.error("Something went wrong");
   } finally {
@@ -45,10 +45,10 @@ const onDelete = async () => {
   try {
     setIsLoading(true);
     
-    await axios.delete(`/api/course/${courseId}/chapters/${chapterId}`);
+    await axios.delete(`/api/courses/${courseId}/chapters/${chapterId}`);
     toast.success("Course deleted successfully");
     router.refresh();
-    router.push(`/teacher/course/${courseId}`);
+    router.push(`/teacher/courses/${courseId}`);
     router.refresh();
     
   } catch (error) {
@@ -65,7 +65,7 @@ const onDelete = async () => {
             variant="outline"
             size="sm"
             >
-                {isPublished ? "Not Published" : "Published"}
+                {isPublished ? "Unpublish" : "Publish"}
             </Button>
             <ConfirmModal onConfirm={onDelete}>
                 <Button size="sm" disabled={isLoading}>

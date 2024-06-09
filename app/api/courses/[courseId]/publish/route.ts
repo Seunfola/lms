@@ -23,7 +23,12 @@ export async function PATCH(
                     include:{
                         muxData:true,
                     }
-                }
+                },
+                attachements:{
+                    orderBy:{
+                        createdAt: "desc",
+                    }
+                },
             }
         });
 
@@ -33,8 +38,8 @@ export async function PATCH(
 
         const hasPublishedChapter = course.chapters.some((chapter)=> chapter.isPublished);
 
-        if(!course.title || !course.description || !course.imageUrl || !hasPublishedChapter ||!course.categoryId){
-            return new NextResponse("Missing required field", {status: 401});
+        if(!course.title || !course.imageUrl || !hasPublishedChapter ||!course.categoryId || !course.price || !course.attachments){
+            return new NextResponse("Missing required field", {status: 400});
         }
 
         const publishedCourse = await db.course.update({

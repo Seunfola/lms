@@ -7,9 +7,9 @@ import InfoCard from "./_components/info-card";
 
 export default async function Dashboard() {
 
-  const {userId} = auth();
+  const { userId } = auth();
 
-  if(!userId){
+  if (!userId) {
     return redirect("/");
   }
 
@@ -21,11 +21,10 @@ export default async function Dashboard() {
   return (
     <div className="p-6 space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <InfoCard icon={Clock} label="In progress" numberOfItems={courseInProgress.length}/>
-                <InfoCard icon={CheckCircle} label="Completed" numberOfItems=
-{completedCourses.length} variant="success" />
+        <InfoCard icon={Clock} label="In progress" numberOfItems={courseInProgress.length} />
+        <InfoCard icon={CheckCircle} label="Completed" numberOfItems={completedCourses.length} variant="success" />
       </div>
-      <CoursesList items={[...courseInProgress,...completedCourses]}/>
+      <CoursesList items={[...courseInProgress, ...completedCourses]} />
     </div>
-  )
+  );
 };

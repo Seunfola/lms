@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 
 
 async function getData(): Promise<any[]> {
-  // Fetch data from your API here.
+
   return [
     {
       id: "728ed52f",
@@ -14,7 +14,7 @@ async function getData(): Promise<any[]> {
       status: "pending",
       email: "m@example.com",
     },
-    // ...
+    
   ]
 }
 

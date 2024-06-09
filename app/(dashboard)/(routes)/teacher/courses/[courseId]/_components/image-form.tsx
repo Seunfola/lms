@@ -13,7 +13,7 @@ import { FileUpload } from "@/components/file-upload";
 interface ImageFormProps {
     initialData: Course;
     courseId: string;
-    updateImageUrl: (imageUrl: string) => void; // Function to update image URL in parent
+
 }
 
 const formSchema = z.object({
@@ -25,7 +25,8 @@ const formSchema = z.object({
 export const ImageForm = ({
     initialData,
     courseId,
-    updateImageUrl
+    
+    
 }: ImageFormProps) => {
 
     const [isEditing, setIsEditing] = useState(false);
@@ -40,7 +41,7 @@ export const ImageForm = ({
             toast.success("Course updated successfully");
             toggleEdit();
             router.refresh();
-            updateImageUrl(updatedImageUrl); // Call updateImageUrl with updated image URL
+            
         } catch {
             toast.error("Something went wrong");
         }

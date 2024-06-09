@@ -41,17 +41,18 @@ export const CategoryForm = ({
             categoryId: initialData?.categoryId || "",
         },
     });
-console.log({options});
-
     const { isSubmitting, isValid } = form.formState;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
+            await form.handleSubmit(async ()=>{
             await axios.patch(`/api/courses/${courseId}`, values);
             toast.success("Course updated successfully");
             toggleEdit();
             router.refresh();
-        } catch {
+        } )();
+        
+    }catch {
             toast.error("Something went wrong");
         }
     };
@@ -91,7 +92,9 @@ console.log({options});
                     <FormControl>
                         <Combobox options={options} {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage>
+                        {form.formState.errors.categoryId?.message}
+                    </FormMessage>
                 </FormItem>
             )}
         />
@@ -102,7 +105,6 @@ console.log({options});
         </div>
     </form>
 </Form>
-
             )}
         </div>
     );

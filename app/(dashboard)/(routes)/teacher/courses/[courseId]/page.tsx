@@ -14,6 +14,7 @@ import { AttachmentForm } from "./_components/attachment-form";
 
 
 const CourseIdPage = async ({ params } :  { params: { courseId: string } }) => {
+
   const { userId } = auth();
 
   if (!userId) {
@@ -51,7 +52,7 @@ const CourseIdPage = async ({ params } :  { params: { courseId: string } }) => {
 
   const requiredFields = [
     course.title,
-    course.description,
+    course.categoryId,
     course.imageUrl,
     course.price,
      course.chapters.length > 0 && course.chapters.some((chapter) => chapter.isPublished) ? true : false,
@@ -88,6 +89,7 @@ const CourseIdPage = async ({ params } :  { params: { courseId: string } }) => {
             </div>
             <TitleForm initialData={course} courseId={course.id} />
             <ImageForm initialData={course} courseId={course.id} />
+
             <CategoryForm
               initialData={course}
               courseId={course.id}
@@ -95,7 +97,9 @@ const CourseIdPage = async ({ params } :  { params: { courseId: string } }) => {
                 label: category.name,
                 value: category.id,
               }))}
-            />
+              />
+
+              
           </div>
           <div className="space-y-6">
             <div>
