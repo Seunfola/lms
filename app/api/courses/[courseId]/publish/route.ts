@@ -24,7 +24,7 @@ export async function PATCH(
                         muxData:true,
                     }
                 },
-                attachements:{
+                attachments:{
                     orderBy:{
                         createdAt: "desc",
                     }
