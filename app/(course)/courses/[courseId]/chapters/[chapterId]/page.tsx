@@ -31,6 +31,7 @@ const ChapterIdPage = async ({ params }: { params: { courseId: string; chapterId
 
     const isLocked = !chapter.isFree && !purchase;
     const completeOnEnd = !!purchase && !userProgress?.isCompleted;
+    const isPurchased = !!purchase;
 
     return (
         <div>
@@ -50,6 +51,7 @@ const ChapterIdPage = async ({ params }: { params: { courseId: string; chapterId
                         playbackId={muxData?.playbackId!}
                         isLocked={isLocked}
                         completeOnEnd={completeOnEnd}
+                        isPurchased={isPurchased}
                     />
                 </div>
                 <div>

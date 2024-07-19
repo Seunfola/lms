@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
-import { Banner } from "@/components/banner"; 
+import { Banner } from "@/components/banner";
 
 interface VideoPlayerProps {
   playbackId: string;
@@ -62,12 +62,13 @@ export const VideoPlayer = ({
   return (
     <div className="relative aspect-video">
       {!isReady && !isLocked && (
-        <Banner
-          variant="warning"
-          label="You need to purchase this course to watch this chapter."
-        >
-          <Loader2 className="w-8 h-8 animate-spin text-secondary" />
-        </Banner>
+        <>
+          <Banner
+            variant="warning"
+            label="You need to purchase this course to watch this chapter."
+          />
+          <Loader2 className="absolute inset-0 w-8 h-8 animate-spin text-secondary" />
+        </>
       )}
       {isLocked && !isPurchased && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-y-2 bg-gray-800 bg-opacity-75 text-secondary">

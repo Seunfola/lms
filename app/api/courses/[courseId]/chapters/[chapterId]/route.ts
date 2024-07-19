@@ -1,12 +1,14 @@
-import Mux from '@mux/mux-node';
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import Mux from '@mux/mux-node';
 
-const { Video } = new Mux({
+const mux = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
   tokenSecret: process.env.MUX_TOKEN_SECRET!,
 });
+
+const { Video } = mux;
 
 export async function DELETE(req: Request, { params }: { params: { courseId: string; chapterId: string } }) {
   try {
@@ -45,9 +47,9 @@ export async function DELETE(req: Request, { params }: { params: { courseId: str
         }
       });
 
-     if (existingMuxData) {
+      if (existingMuxData) {
         try {
-             await  Video.Assets.del(existingMuxData.assetId);
+          await Video.Assets.del(existingMuxData.assetId);
           await db.muxData.delete({
             where: {
               id: existingMuxData.id,
@@ -125,7 +127,6 @@ export async function PATCH(
       }
     });
    
-    
     if (values.videoUrl) {
       const existingMuxData = await db.muxData.findFirst({
         where: {
@@ -133,7 +134,7 @@ export async function PATCH(
         }
       });
 
-     if (existingMuxData) {
+      if (existingMuxData) {
         await Video.Assets.del(existingMuxData.assetId);
         await db.muxData.delete({
           where: {
