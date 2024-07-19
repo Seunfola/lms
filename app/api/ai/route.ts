@@ -10,7 +10,6 @@ const configureOpenAI = (apiKey: string, organization: string | null = null, pro
   });
 };
 
-
 interface ChatCompletionMessageParam {
   role: 'system' | 'user' | 'assistant';
   content: string;
@@ -27,8 +26,6 @@ export async function POST(req: Request) {
   try {
     const body: RequestBody = await req.json();
 
-    console.log('Request body:', body);
-
     if (!body.messages || !Array.isArray(body.messages)) {
       return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
@@ -40,8 +37,6 @@ export async function POST(req: Request) {
 
     const openai = configureOpenAI(apiKey, body.organization, body.project);
 
-    console.log({ openai }); 
-
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: body.messages,
@@ -51,6 +46,11 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ output: theResponse }, { status: 200 });
   } catch (error) {
+    if (error === 'insufficient_quota') {
+      const responseData = error;
+      console.error("Response data:", responseData);
+      return NextResponse.json({ error: "Insufficient quota. Please check your OpenAI plan and usage." }, { status: 403 });
+    }
     console.error("Error creating completion:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }

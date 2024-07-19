@@ -3,9 +3,9 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
-const mux = new Mux({
-  tokenId: process.env.MUX_TOKEN_ID,
-  tokenSecret: process.env.MUX_TOKEN_SECRET
+const { Video } = new Mux({
+  tokenId: process.env.MUX_TOKEN_ID!,
+  tokenSecret: process.env.MUX_TOKEN_SECRET!,
 });
 
 export async function DELETE(req: Request, { params }: { params: { courseId: string; chapterId: string } }) {
@@ -45,16 +45,16 @@ export async function DELETE(req: Request, { params }: { params: { courseId: str
         }
       });
 
-      if (existingMuxData) {
+     if (existingMuxData) {
         try {
-  await mux.video.assets.delete(existingMuxData.assetId);
+             await  Video.Assets.del(existingMuxData.assetId);
           await db.muxData.delete({
             where: {
               id: existingMuxData.id,
-            }
+            },
           });
         } catch (error) {
-          console.error("Error deleting mux data:", error);
+          console.error("Error deleting Mux data:", error);
           return new NextResponse("Internal Server Error", { status: 500 });
         }
       }
@@ -133,19 +133,18 @@ export async function PATCH(
         }
       });
 
-      if (existingMuxData) {
-    await mux.video.assets.delete(existingMuxData.assetId);
+     if (existingMuxData) {
+        await Video.Assets.del(existingMuxData.assetId);
         await db.muxData.delete({
           where: {
             id: existingMuxData.id,
-          }
+          },
         });
       }
 
-      const asset = await mux.video.assets.create({
-        input: [{url: values.videoUrl}],
+      const asset = await Video.Assets.create({
+        input: [{ url: values.videoUrl }],
         playback_policy: ['public'],
-        test: false,
       });
 
       await db.muxData.create({
@@ -153,7 +152,7 @@ export async function PATCH(
           chapterId: params.chapterId,
           assetId: asset.id,
           playbackId: asset.playback_ids?.[0]?.id,
-        }
+        },
       });
     }
 

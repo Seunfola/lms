@@ -38,40 +38,39 @@ const AIChat = () => {
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  const userMessage: Message = {
-    sender: 'You',
-    id: `${Date.now()}-user`,
-    content: values.prompt,
-    text: values.prompt,
+    const userMessage: Message = {
+      sender: 'You',
+      id: `${Date.now()}-user`,
+      content: values.prompt,
+      text: values.prompt,
+    };
+    setMessages((prevMessages) => [userMessage, ...prevMessages]);
+
+    try {
+      const response: AxiosResponse<{ output: { content: string } }> = await axios.post('/api/ai', {
+        messages: [{ role: 'user', content: values.prompt }],
+      });
+      const aiMessage: Message = {
+        sender: 'AI',
+        id: `${Date.now()}-ai`,
+        content: response.data.output.content,
+        text: response.data.output.content,
+      };
+
+      setMessages((prevMessages) => [aiMessage, ...prevMessages]);
+    } catch (error) {
+      console.error('Error interacting with AI:', error);
+      const errorMessage: Message = {
+        sender: 'AI',
+        id: `${Date.now()}-error`,
+        content: 'Error occurred',
+        text: 'Error occurred',
+      };
+      setMessages((prevMessages) => [errorMessage, ...prevMessages]);
+    }
+
+    form.reset();
   };
-  setMessages((prevMessages) => [userMessage, ...prevMessages]);
-
-  try {
-    const response: AxiosResponse<{ message: string }> = await axios.post('/api/ai', {
-      messages: [{ role: 'user', content: values.prompt }],
-    });
-    const aiMessage: Message = {
-      sender: 'AI',
-      id: `${Date.now()}-ai`,
-      content: response.data.message,
-      text: response.data.message,
-    };
-
-    setMessages((prevMessages) => [aiMessage, ...prevMessages]);
-  } catch (error) {
-    console.error('Error interacting with AI:', error);
-    const errorMessage: Message = {
-      sender: 'AI',
-      id: `${Date.now()}-error`,
-      content: 'Error occurred',
-      text: 'Error occurred',
-    };
-    setMessages((prevMessages) => [errorMessage, ...prevMessages]);
-  }
-
-  form.reset();
-};
-
 
   return (
     <Form {...form}>
@@ -114,8 +113,7 @@ const AIChat = () => {
           <Button
             disabled={!isValid || isSubmitting}
             onClick={form.handleSubmit(onSubmit)}
-            className="p-4 bg-sky-600 text-white rounded shadow hover:bg-sky-700 mt-4"
-          >
+            className="p-4 bg-sky-600 text-white rounded shadow hover:bg-sky-700 mt-4">
             Send
           </Button>
         </div>

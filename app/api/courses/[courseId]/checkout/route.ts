@@ -1,8 +1,7 @@
 import { currentUser } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import Stripe from "stripe";
-import { stripe } from "@/lib/stripe";
+import paystack from "@/lib/paystack";
 
 export async function POST(req: Request, { params }: { params: { courseId: string } }) {
   try {
@@ -36,55 +35,54 @@ export async function POST(req: Request, { params }: { params: { courseId: strin
       return new NextResponse("Already Purchased", { status: 400 });
     }
 
-    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [
-      {
-        quantity: 1,
-        price_data: {
-          currency: "NGN",
-          product_data: {
-            name: course.title,
-            description: course.description!,
-          },
-          unit_amount: Math.round(course.price! * 100),
-        },
-      },
-    ];
-
-    let stripeCustomer = await db.stripeCustomer.findUnique({
+    let paystackCustomer = await db.paystackCustomer.findUnique({
       where: {
         userId: user.id,
       },
       select: {
-        stripeCustomerId: true,
+        paystackCustomerId: true,
       },
     });
 
-    if (!stripeCustomer) {
-      const customer = await stripe.customers.create({
-        email: user.emailAddresses[0].emailAddress,
-      });
+    if (!paystackCustomer) {
+     
+      const existingCustomerResponse = await paystack.get(`/customer?email=${user.emailAddresses[0].emailAddress}`);
+      if (existingCustomerResponse.data.status && existingCustomerResponse.data.data.length > 0) {
+        paystackCustomer = await db.paystackCustomer.create({
+          data: {
+            userId: user.id,
+            paystackCustomerId: existingCustomerResponse.data.data[0].customer_code,
+          },
+        });
+      } else {
 
-      stripeCustomer = await db.stripeCustomer.create({
-        data: {
-          userId: user.id,
-          stripeCustomerId: customer.id,
-        },
-      });
+        const newCustomerResponse = await paystack.post('/customer', {
+          email: user.emailAddresses[0].emailAddress,
+        });
+        paystackCustomer = await db.paystackCustomer.create({
+          data: {
+            userId: user.id,
+            paystackCustomerId: newCustomerResponse.data.data.customer_code,
+          },
+        });
+      }
     }
 
-    const session = await stripe.checkout.sessions.create({
-      customer: stripeCustomer.stripeCustomerId,
-      line_items,
-      mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/courses/${course.id}?success=1`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/courses/${course.id}?canceled=1`,
+    const amount = Math.round(course.price! * 100); 
+
+    const transactionResponse = await paystack.post('/transaction/initialize', {
+      amount,
+      email: user.emailAddresses[0].emailAddress,
       metadata: {
         courseId: course.id,
         userId: user.id,
       },
+      callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/courses/${course.id}?success=1`,
     });
 
-    return NextResponse.json({ url: session.url });
+    const { authorization_url } = transactionResponse.data.data;
+
+    return NextResponse.json({ url: authorization_url });
 
   } catch (error) {
     console.log("[COURSE_ID_CHECKOUT]", error);

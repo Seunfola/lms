@@ -3,9 +3,9 @@ import { auth } from "@clerk/nextjs";
 import { db } from "@/lib/db";
 import Mux from "@mux/mux-node";
 
-const mux = new Mux({
-  tokenId: process.env.MUX_TOKEN_ID,
-  tokenSecret: process.env.MUX_TOKEN_SECRET
+const { Video } = new Mux({
+  tokenId: process.env.MUX_TOKEN_ID!,
+  tokenSecret: process.env.MUX_TOKEN_SECRET!,
 });
 
 export async function DELETE(req: Request, { params }: { params: { courseId: string } }) {
@@ -19,7 +19,6 @@ export async function DELETE(req: Request, { params }: { params: { courseId: str
     const course = await db.course.findUnique({
       where: {
         id: params.courseId,
-        userId: userId,
       },
       include: {
         chapters: {
@@ -30,13 +29,23 @@ export async function DELETE(req: Request, { params }: { params: { courseId: str
       },
     });
 
-    if (!course) {
+    if (!course || course.userId !== userId) {
       return new NextResponse("Not found", { status: 404 });
     }
 
     for (const chapter of course.chapters) {
       if (chapter.muxData?.assetId) {
-        await mux.video.assets.delete(chapter.muxData.assetId);
+        try {
+          await Video.assets.del(chapter.muxData.assetId);
+          await db.muxData.delete({
+            where: {
+              id: chapter.muxData.id,
+            },
+          });
+        } catch (error) {
+          console.error("Error deleting Mux data:", error);
+          return new NextResponse("Internal Server Error", { status: 500 });
+        }
       }
     }
 
@@ -50,34 +59,82 @@ export async function DELETE(req: Request, { params }: { params: { courseId: str
 
   } catch (error) {
     console.log("[COURSE_ID_DELETE]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
 
 export async function PATCH(req: Request, { params }: { params: { courseId: string } }) {
   try {
     const { userId } = auth();
-    const { courseId } = params;
     const values = await req.json();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const course = await db.course.update({
+    const course = await db.course.findUnique({
       where: {
-        id: courseId,
-        userId: userId,
+        id: params.courseId,
+      },
+    });
+
+    if (!course || course.userId !== userId) {
+      return new NextResponse("Not found", { status: 404 });
+    }
+
+    if (values.videoUrl) {
+      const existingMuxData = await db.muxData.findFirst({
+        where: {
+          chapterId: params.courseId,
+        },
+      });
+
+      if (existingMuxData) {
+        try {
+          await Video.assets.del(existingMuxData.assetId);
+          await db.muxData.delete({
+            where: {
+              id: existingMuxData.id,
+            },
+          });
+        } catch (error) {
+          console.error("Error deleting Mux data:", error);
+          return new NextResponse("Internal Server Error", { status: 500 });
+        }
+      }
+
+      try {
+        const asset = await Video.assets.create({
+          input: values.videoUrl,
+          playback_policy: ['public'],
+        });
+
+        await db.muxData.create({
+          data: {
+            chapterId: params.courseId,
+            assetId: asset.id,
+            playbackId: asset.playback_ids?.[0]?.id,
+          },
+        });
+      } catch (error) {
+        console.error("Error creating Mux asset:", error);
+        return new NextResponse("Internal Server Error", { status: 500 });
+      }
+    }
+
+    const updatedCourse = await db.course.update({
+      where: {
+        id: params.courseId,
       },
       data: {
         ...values,
       },
     });
-    
-    return NextResponse.json(course); 
+
+    return NextResponse.json(updatedCourse);
 
   } catch (error) {
-    console.log("[COURSES]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    console.log("[COURSES_PATCH]", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
