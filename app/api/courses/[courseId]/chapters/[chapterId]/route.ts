@@ -8,8 +8,6 @@ const mux = new Mux({
   tokenSecret: process.env.MUX_TOKEN_SECRET!,
 });
 
-const { Video } = mux;
-
 export async function DELETE(req: Request, { params }: { params: { courseId: string; chapterId: string } }) {
   try {
     const { userId } = auth();
@@ -49,7 +47,7 @@ export async function DELETE(req: Request, { params }: { params: { courseId: str
 
       if (existingMuxData) {
         try {
-          await Video.Assets.del(existingMuxData.assetId);
+          await mux.Video.Assets.del(existingMuxData.assetId);
           await db.muxData.delete({
             where: {
               id: existingMuxData.id,
@@ -135,7 +133,7 @@ export async function PATCH(
       });
 
       if (existingMuxData) {
-        await Video.Assets.del(existingMuxData.assetId);
+        await mux.Video.Assets.del(existingMuxData.assetId);
         await db.muxData.delete({
           where: {
             id: existingMuxData.id,
@@ -143,7 +141,7 @@ export async function PATCH(
         });
       }
 
-      const asset = await Video.Assets.create({
+      const asset = await mux.Video.Assets.create({
         input: [{ url: values.videoUrl }],
         playback_policy: ['public'],
       });
