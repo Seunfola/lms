@@ -47,7 +47,7 @@ export async function DELETE(req: Request, { params }: { params: { courseId: str
 
       if (existingMuxData) {
         try {
-          await mux.Video.Assets.del(existingMuxData.assetId);
+          await mux.video.assets.delete(existingMuxData.assetId);
           await db.muxData.delete({
             where: {
               id: existingMuxData.id,
@@ -91,11 +91,7 @@ export async function DELETE(req: Request, { params }: { params: { courseId: str
   }
 }
 
-export async function PATCH(
-  req: Request, 
-  { params }: 
-  { params: { courseId: string; chapterId: string } }) {
-    
+export async function PATCH(req: Request, { params }: { params: { courseId: string; chapterId: string } }) {
   try {
     const { userId } = auth();
     const { isPublished, ...values } = await req.json();
@@ -124,7 +120,7 @@ export async function PATCH(
         ...values,
       }
     });
-   
+
     if (values.videoUrl) {
       const existingMuxData = await db.muxData.findFirst({
         where: {
@@ -133,7 +129,7 @@ export async function PATCH(
       });
 
       if (existingMuxData) {
-        await mux.Video.Assets.del(existingMuxData.assetId);
+        await mux.video.assets.delete(existingMuxData.assetId);
         await db.muxData.delete({
           where: {
             id: existingMuxData.id,
@@ -141,7 +137,7 @@ export async function PATCH(
         });
       }
 
-      const asset = await mux.Video.Assets.create({
+      const asset = await mux.video.assets.create({
         input: [{ url: values.videoUrl }],
         playback_policy: ['public'],
       });
@@ -156,7 +152,6 @@ export async function PATCH(
     }
 
     return NextResponse.json(chapter);
-    
   } catch (error) {
     console.log("[COURSE_CHAPTER_ID]", error);
     return new NextResponse("Internal Error", { status: 500 });
