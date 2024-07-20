@@ -8,10 +8,17 @@ export async function POST(
 ) {
   try {
     const { userId } = auth();
-    const { url } = await req.json();
 
     if (!userId) {
+      console.error('User ID not found');
       return new NextResponse('Unauthorized', { status: 401 });
+    }
+
+    const { url } = await req.json();
+
+    if (!url) {
+      console.error('URL not provided in the request body');
+      return new NextResponse('Bad Request', { status: 400 });
     }
 
     const courseOwner = await db.course.findUnique({
@@ -22,6 +29,7 @@ export async function POST(
     });
 
     if (!courseOwner) {
+      console.error('Course not found or user is not the owner');
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
