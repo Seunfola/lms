@@ -1,26 +1,23 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import Paystack from '@paystack/paystack-sdk';
-
-const paystack = new Paystack(process.env.PAYSTACK_SECRET_KEY);
+import paystack from '@/lib/paystack';
 
 export async function POST(req: Request) {
   try {
-    // Parse the request body
     const { sessionId } = await req.json();
 
     if (!sessionId) {
       return NextResponse.json('Missing sessionId', { status: 400 });
     }
 
-    // Retrieve the session from paystack
-    const session = await paystack.transaction.verify(sessionId);
+    const response = await paystack.get(`/transaction/verify/${sessionId}`);
+
+    const session = response.data;
 
     if (!session) {
       return NextResponse.json('Invalid sessionId', { status: 400 });
     }
 
-    // Extract necessary metadata
     const userId = session.data.metadata?.userId;
     const courseId = session.data.metadata?.courseId;
 
@@ -28,9 +25,7 @@ export async function POST(req: Request) {
       return NextResponse.json('Missing metadata', { status: 400 });
     }
 
-    // Ensure the payment is completed
     if (session.data.status === 'success') {
-      // Update the database
       await db.purchase.create({
         data: {
           courseId: courseId,
