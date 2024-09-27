@@ -1,47 +1,43 @@
 'use client';
 import { useAuth, UserButton } from "@clerk/nextjs";
-import { usePathname,useRouter  } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import Link from 'next/link'
+import Link from 'next/link';
 import { LogOut } from "lucide-react";
 import { SearchInput } from "./search-input";
-import { isTutor } from "@/lib/teacher";
 
-
-
-export const NavbarRoutes =()=>{
-
+export const NavbarRoutes = () => {
   const { userId } = useAuth();
-  const pathname =usePathname();
+  const pathname = usePathname();
 
-const isTutorPage = pathname?.startsWith("/teacher");
-const isCoursePage = pathname?.includes("/courses");
-const isSearchPage = pathname === "/search";
+  // Determine if the user is on specific pages
+  const isTutorPage = pathname?.startsWith("/teacher");
+  const isCoursePage = pathname?.includes("/courses");
+  const isSearchPage = pathname === "/search";
 
-    return(
+  return (
     <>
-    {isSearchPage && (
-      <div className="hidden md:block">
-          <SearchInput/>
-       </div> 
-    )}
+      {/* Conditionally render SearchInput for search page */}
+      {isSearchPage && (
+        <div className="hidden md:block">
+          <SearchInput />
+        </div>
+      )}
+
       <div className="flex ml-auto gap-x-2">
-        {isTutorPage || isCoursePage?(
+        {/* Show exit button for tutor or course pages */}
+        {(isTutorPage || isCoursePage) && (
           <Link href="/">
-          <Button size="sm" variant="ghost">
-<LogOut className="w-4 h-4 mr-2"/>
-Exit
-          </Button>
+            <Button size="sm" variant="ghost">
+              <LogOut className="w-4 h-4 mr-2" />
+              Exit
+            </Button>
           </Link>
-        ): isTutor (userId) ? (
-         <Link href="/teacher/courses">
-          <Button size="sm" variant="ghost">
-         Tutor Mode
-         </Button>
-         </Link> 
-        ) : null }
-<UserButton afterSignOutUrl="/" />
-      </div>  
-      </>
-    )
-}
+        )}
+
+        {/* Show UserButton for authentication actions */}
+        <UserButton afterSignOutUrl="/" />
+      </div>
+    </>
+  );
+};

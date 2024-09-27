@@ -1,9 +1,14 @@
 import { authMiddleware } from "@clerk/nextjs";
 
 export default authMiddleware({
-    publicRoutes:["/api/uploadthing"]
+  publicRoutes: ["/"],
+  afterAuth: (auth, req, evt) => {
+    if (!auth.isPublicRoute && !auth.userId) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+  },
 });
 
 export const config = {
-  matcher: ["/((?!.+.[w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!_next|.*\\..*).*)", "/", "/(api|trpc)(.*)"],
 };

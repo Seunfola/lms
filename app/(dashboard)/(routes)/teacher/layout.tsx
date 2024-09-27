@@ -1,20 +1,17 @@
-import { isTutor } from "@/lib/teacher";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
+const TeacherLayout = ({ children }: { children: React.ReactNode }) => {
+  const { userId } = auth();
 
-const TeacherLayout = ({children}:{children: React.ReactNode}) => {
+  // Since isTutor is removed, you can add any other logic or just allow all authenticated users
+  // If you want to add any other checks, this is where you could place them.
+  
+  if (!userId) {
+    return redirect("/");
+  }
 
-    const { userId } = auth();
+  return <>{children}</>;
+};
 
-    if(!isTutor(userId)){
-        return redirect ("/")
-    }
-    return ( 
-        <>
-           {children} 
-        </>
-     );
-}
- 
 export default TeacherLayout;
