@@ -1,14 +1,14 @@
 -- CreateTable
 CREATE TABLE "Course" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "description" TEXT,
-    "imageUrl" TEXT,
-    "price" DOUBLE PRECISION,
-    "isPublished" BOOLEAN NOT NULL DEFAULT false,
-    "categoryId" TEXT,
-    "position" INTEGER NOT NULL,
+    "id" STRING NOT NULL,
+    "userId" STRING NOT NULL,
+    "title" STRING NOT NULL,
+    "description" STRING,
+    "imageUrl" STRING,
+    "price" FLOAT8,
+    "isPublished" BOOL NOT NULL DEFAULT false,
+    "categoryId" STRING,
+    "position" INT4 NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -17,18 +17,18 @@ CREATE TABLE "Course" (
 
 -- CreateTable
 CREATE TABLE "Category" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "id" STRING NOT NULL,
+    "name" STRING NOT NULL,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Attachment" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "url" TEXT NOT NULL,
-    "courseId" TEXT NOT NULL,
+    "id" STRING NOT NULL,
+    "name" STRING NOT NULL,
+    "url" STRING NOT NULL,
+    "courseId" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -37,14 +37,14 @@ CREATE TABLE "Attachment" (
 
 -- CreateTable
 CREATE TABLE "Chapter" (
-    "id" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "description" TEXT,
-    "videoUrl" TEXT,
-    "position" INTEGER NOT NULL,
-    "isPublished" BOOLEAN NOT NULL DEFAULT false,
-    "isFree" BOOLEAN NOT NULL DEFAULT false,
-    "courseId" TEXT NOT NULL,
+    "id" STRING NOT NULL,
+    "title" STRING NOT NULL,
+    "description" STRING,
+    "videoUrl" STRING,
+    "position" INT4 NOT NULL,
+    "isPublished" BOOL NOT NULL DEFAULT false,
+    "isFree" BOOL NOT NULL DEFAULT false,
+    "courseId" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -53,29 +53,29 @@ CREATE TABLE "Chapter" (
 
 -- CreateTable
 CREATE TABLE "MuxData" (
-    "id" TEXT NOT NULL,
-    "assetId" TEXT NOT NULL,
-    "playbackId" TEXT,
-    "chapterId" TEXT NOT NULL,
+    "id" STRING NOT NULL,
+    "assetId" STRING NOT NULL,
+    "playbackId" STRING,
+    "chapterId" STRING NOT NULL,
 
     CONSTRAINT "MuxData_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "userProgress" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "chapterId" TEXT NOT NULL,
-    "isCompleted" BOOLEAN NOT NULL DEFAULT false,
+    "id" STRING NOT NULL,
+    "userId" STRING NOT NULL,
+    "chapterId" STRING NOT NULL,
+    "isCompleted" BOOL NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "Purchase" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "courseId" TEXT NOT NULL,
+    "id" STRING NOT NULL,
+    "userId" STRING NOT NULL,
+    "courseId" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -83,14 +83,14 @@ CREATE TABLE "Purchase" (
 );
 
 -- CreateTable
-CREATE TABLE "StripeCustomer" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "stripeCustomerId" TEXT NOT NULL,
+CREATE TABLE "PaystackCustomer" (
+    "id" STRING NOT NULL,
+    "userId" STRING NOT NULL,
+    "paystackCustomerId" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "StripeCustomer_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "PaystackCustomer_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -121,7 +121,7 @@ CREATE INDEX "Purchase_courseId_idx" ON "Purchase"("courseId");
 CREATE UNIQUE INDEX "Purchase_userId_courseId_key" ON "Purchase"("userId", "courseId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "StripeCustomer_userId_key" ON "StripeCustomer"("userId");
+CREATE UNIQUE INDEX "PaystackCustomer_userId_key" ON "PaystackCustomer"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "StripeCustomer_stripeCustomerId_key" ON "StripeCustomer"("stripeCustomerId");
+CREATE UNIQUE INDEX "PaystackCustomer_paystackCustomerId_key" ON "PaystackCustomer"("paystackCustomerId");
