@@ -1,32 +1,29 @@
 'use client';
-import { useAuth, UserButton } from "@clerk/nextjs";
-import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useAuth, UserButton } from '@clerk/nextjs';
+import { usePathname } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { LogOut } from "lucide-react";
-import { SearchInput } from "./search-input";
+import { LogOut } from 'lucide-react';
+import { SearchInput } from './search-input';
 
 export const NavbarRoutes = () => {
-  const { userId } = useAuth();
+  const { isSignedIn, userId } = useAuth();
   const pathname = usePathname();
 
-  // Determine if the user is on specific pages
-  const isTutorPage = pathname?.startsWith("/teacher");
-  const isCoursePage = pathname?.includes("/courses");
-  const isSearchPage = pathname === "/search";
+  const isOnCoursePage = pathname?.includes('/courses');
+  const isOnTutorPage = pathname?.startsWith('/teacher');
+  const isOnSearchPage = pathname === '/search';
 
   return (
-    <>
-      {/* Conditionally render SearchInput for search page */}
-      {isSearchPage && (
+    <div>
+      {isOnSearchPage && (
         <div className="hidden md:block">
           <SearchInput />
         </div>
       )}
 
       <div className="flex ml-auto gap-x-2">
-        {/* Show exit button for tutor or course pages */}
-        {(isTutorPage || isCoursePage) && (
+        {(isOnCoursePage || isOnTutorPage) && (
           <Link href="/">
             <Button size="sm" variant="ghost">
               <LogOut className="w-4 h-4 mr-2" />
@@ -35,9 +32,9 @@ export const NavbarRoutes = () => {
           </Link>
         )}
 
-        {/* Show UserButton for authentication actions */}
         <UserButton afterSignOutUrl="/" />
       </div>
-    </>
+    </div>
   );
 };
+
