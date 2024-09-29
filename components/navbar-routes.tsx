@@ -7,7 +7,7 @@ import { LogOut } from 'lucide-react';
 import { SearchInput } from './search-input';
 
 export const NavbarRoutes = () => {
-  const { isSignedIn, userId } = useAuth();
+  const { userId } = useAuth();
   const pathname = usePathname();
 
   const isOnCoursePage = pathname?.includes('/courses');
@@ -32,9 +32,14 @@ export const NavbarRoutes = () => {
           </Link>
         )}
 
+        {userId && (
+          <Link href={`/profile/${userId}`}>
+            <Button size="sm" variant="default">Profile</Button>
+          </Link>
+        )}
+
         <UserButton afterSignOutUrl="/" />
       </div>
     </div>
   );
 };
-
