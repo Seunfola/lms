@@ -1,8 +1,9 @@
 generator client {
-  provider = 'prisma-client-js'
-  previewFeatures = ['fullTextSearch", "fullTextIndex']
-  seed    = "prisma/seed.ts"
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  seed = "prisma/seed.ts"
 }
+
 
 datasource db {
   provider = "cockroachdb"
