@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { LogOut } from 'lucide-react';
-import { SearchInput } from './search-input';
+// import { SearchInput } from './search-input';
 
 export const NavbarRoutes = () => {
   const { userId } = useAuth();
@@ -18,13 +18,13 @@ export const NavbarRoutes = () => {
     <div>
       {isOnSearchPage && (
         <div className="hidden md:block">
-          <SearchInput />
+          {/* <SearchInput /> */}
         </div>
       )}
 
       <div className="flex ml-auto gap-x-2">
         {(isOnCoursePage || isOnTutorPage) && (
-          <Link href="/">
+          <Link href={isOnTutorPage ? '/teacher-landing' : '/'}>
             <Button size="sm" variant="ghost">
               <LogOut className="w-4 h-4 mr-2" />
               Exit
