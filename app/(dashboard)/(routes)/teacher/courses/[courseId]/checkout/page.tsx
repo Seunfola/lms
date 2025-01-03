@@ -1,9 +1,8 @@
-import { GetServerSideProps } from "next";
+'use client';
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation";
 import convertToSubCurrency from "@/lib/convertToSubcurrency";
 import CheckoutForm from "../_components/checkout-form";
 
@@ -14,15 +13,11 @@ if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "");
 
-// Dynamically import the CheckoutForm component
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  return { props: {} }; // No props are passed in this example
-};
 
 export default function CheckoutPageComponent() {
-  const router = useRouter();
-  const { amount: queryAmount } = router.query;
+  const searchParams = useSearchParams();
+  const queryAmount = searchParams.get("amount");
 
   const [state, setState] = useState({
     amount: null as number | null,
@@ -30,10 +25,8 @@ export default function CheckoutPageComponent() {
   });
 
   useEffect(() => {
-    // Indicate the component is running on the client side
     setState((prevState) => ({ ...prevState, isClient: true }));
 
-    // Parse and validate the `amount` query parameter
     if (queryAmount) {
       const parsedAmount = parseFloat(queryAmount as string);
       if (!isNaN(parsedAmount) && parsedAmount > 0) {

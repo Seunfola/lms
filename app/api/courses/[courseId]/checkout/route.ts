@@ -1,91 +1,32 @@
-import { currentUser } from "@clerk/nextjs";
-import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import paystack from "@/lib/stripe]";
+import { NextApiRequest, NextApiResponse } from "next";
+import Stripe from "stripe";
 
-export async function POST(req: Request, { params }: { params: { courseId: string } }) {
-  try {
-    const user = await currentUser();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+  apiVersion: "2024-04-10",
+});
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
-    if (!user || !user.id || !user.emailAddresses?.[0]?.emailAddress) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+  if (req.method === "POST") {
+    try {
+        const {amount} = await req.body
 
-    const course = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        isPublished: true,
-      },
-    });
-
-    if (!course) {
-      return new NextResponse("Not Found", { status: 404 });
-    }
-
-    const purchase = await db.purchase.findUnique({
-      where: {
-        userId_courseId: {
-          userId: user.id,
-          courseId: params.courseId,
-        },
-      },
-    });
-
-    if (purchase) {
-      return new NextResponse("Already Purchased", { status: 400 });
-    }
-
-    let paystackCustomer = await db.paystackCustomer.findUnique({
-      where: {
-        userId: user.id,
-      },
-      select: {
-        paystackCustomerId: true,
-      },
-    });
-
-    if (!paystackCustomer) {
-     
-      const existingCustomerResponse = await paystack.get(`/customer?email=${user.emailAddresses[0].emailAddress}`);
-      if (existingCustomerResponse.data.status && existingCustomerResponse.data.data.length > 0) {
-        paystackCustomer = await db.paystackCustomer.create({
-          data: {
-            userId: user.id,
-            paystackCustomerId: existingCustomerResponse.data.data[0].customer_code,
-          },
-        });
-      } else {
-
-        const newCustomerResponse = await paystack.post('/customer', {
-          email: user.emailAddresses[0].emailAddress,
-        });
-        paystackCustomer = await db.paystackCustomer.create({
-          data: {
-            userId: user.id,
-            paystackCustomerId: newCustomerResponse.data.data.customer_code,
-          },
-        });
+      if (!amount || typeof amount !== "number") {
+        return res.status(400).json({ message: "Amount is required and must be a number." });
       }
+
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount,
+          currency: "usd",
+          automatic_payment_methods: {enabled: true},
+        });
+        return res.json({ clientSecret: paymentIntent.client_secret });
+   
+    } catch (err) {
+      console.error(err);
+    return res.status(500).json({ message: "Internal server error" });
     }
-
-    const amount = Math.round(course.price! * 100); 
-
-    const transactionResponse = await paystack.post('/transaction/initialize', {
-      amount,
-      email: user.emailAddresses[0].emailAddress,
-      metadata: {
-        courseId: course.id,
-        userId: user.id,
-      },
-      callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/courses/${course.id}?success=1`,
-    });
-
-    const { authorization_url } = transactionResponse.data.data;
-
-    return NextResponse.json({ url: authorization_url });
-
-  } catch (error) {
-    console.log("[COURSE_ID_CHECKOUT]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+} else {
+    res.setHeader("Allow", ["POST"]);
+    return res.status(405).json({ message: "Method Not Allowed" });
   }
 }

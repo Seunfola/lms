@@ -1,43 +1,56 @@
-import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import paystack from '@/lib/stripe';
+import { NextRequest, NextResponse } from "next/server";
+import Stripe from "stripe";
 
-export async function POST(req: Request) {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+  apiVersion: "2024-04-10",
+});
+
+export const runtime = "nodejs"; // Specify the runtime for the API route
+export const preferredRegion = "auto"; // Optional: Define the preferred region for deployment
+
+async function readableToBuffer(reader: ReadableStreamDefaultReader) {
+  const chunks = [];
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks);
+}
+
+export async function POST(req: NextRequest) {
+  const sig = req.headers.get("stripe-signature");
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    const readable = req.body ? req.body.getReader() : null;
+    const rawBody = readable ? await readableToBuffer(readable) : null;
+  if (!sig || !endpointSecret) {
+    return NextResponse.json(
+      { error: "Missing webhook secret or signature" },
+      { status: 400 }
+    );
+  }
+
   try {
-    const { sessionId } = await req.json();
+    if (!rawBody) {
+      throw new Error("Raw body is null");
+    }
+    const event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
 
-    if (!sessionId) {
-      return NextResponse.json('Missing sessionId', { status: 400 });
+
+    switch (event.type) {
+      case "payment_intent.succeeded":
+        console.log("PaymentIntent succeeded:", event.data.object);
+        break;
+      case "payment_intent.payment_failed":
+        console.log("PaymentIntent failed:", event.data.object);
+        break;
+      default:
+        console.log("Unhandled event type:", event.type);
     }
 
-    const response = await paystack.get(`/transaction/verify/${sessionId}`);
-
-    const session = response.data;
-
-    if (!session) {
-      return NextResponse.json('Invalid sessionId', { status: 400 });
-    }
-
-    const userId = session.data.metadata?.userId;
-    const courseId = session.data.metadata?.courseId;
-
-    if (!userId || !courseId) {
-      return NextResponse.json('Missing metadata', { status: 400 });
-    }
-
-    if (session.data.status === 'success') {
-      await db.purchase.create({
-        data: {
-          courseId: courseId,
-          userId: userId,
-        },
-      });
-
-      return NextResponse.json('Payment confirmed and purchase recorded', { status: 200 });
-    } else {
-      return NextResponse.json('Payment not completed', { status: 400 });
-    }
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ received: true });
+  } catch (err) {
+    console.error("Webhook signature verification failed:", err);
+    return NextResponse.json({ error: "Webhook Error" }, { status: 400 });
   }
 }
