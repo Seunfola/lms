@@ -1,7 +1,7 @@
 import { currentUser } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import paystack from "@/lib/paystack";
+import paystack from "@/lib/stripe]";
 
 export async function POST(req: Request, { params }: { params: { courseId: string } }) {
   try {
