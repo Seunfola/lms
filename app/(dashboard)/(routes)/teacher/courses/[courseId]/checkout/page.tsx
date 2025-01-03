@@ -67,7 +67,7 @@ export default function CheckoutPageComponent() {
             options={{
               mode: "payment",
               currency: "usd",
-              amount: convertToSubCurrency(state.amount), // Convert amount to subunits (e.g., cents)
+              amount: convertToSubCurrency(state.amount), 
             }}
           >
             <CheckoutForm amount={state.amount} />

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import paystack from '@/lib/stripe]';
+import paystack from '@/lib/stripe';
 
 export async function POST(req: Request) {
   try {
