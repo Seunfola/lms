@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import convertToSubCurrency from "@/lib/convertToSubcurrency";
+import CheckoutForm from "../_components/checkout-form";
 
 // Ensure the Stripe publishable key is provided
 if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
@@ -14,7 +15,6 @@ if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "");
 
 // Dynamically import the CheckoutForm component
-const CheckoutForm = dynamic(() => import("../_components/checkout-form"), { ssr: false });
 
 export const getServerSideProps: GetServerSideProps = async () => {
   return { props: {} }; // No props are passed in this example
